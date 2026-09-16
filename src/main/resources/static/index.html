@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Java Calculator</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f2f2f2;
+            font-family: Arial, sans-serif;
+        }
+
+        .calculator {
+            width: 340px;
+            background: #222;
+            padding: 20px;
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        .display {
+            width: 100%;
+            height: 90px;
+            background: #111;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            padding: 15px;
+            font-size: 36px;
+            text-align: right;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            height: 65px;
+            border: none;
+            border-radius: 10px;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        .number {
+            background: #444;
+            color: white;
+        }
+
+        .operator {
+            background: #ff9500;
+            color: white;
+        }
+
+        .clear {
+            background: #d9534f;
+            color: white;
+        }
+
+        .equals {
+            background: #28a745;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        .zero {
+            grid-column: span 2;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="calculator">
+
+    <input
+        id="display"
+        class="display"
+        type="text"
+        value="0"
+        readonly
+    >
+
+    <div class="buttons">
+
+        <button class="clear" onclick="clearCalculator()">C</button>
+        <button class="number" onclick="deleteNumber()">⌫</button>
+        <button class="operator" onclick="chooseOperation('divide')">÷</button>
+        <button class="operator" onclick="chooseOperation('multiply')">×</button>
+
+        <button class="number" onclick="enterNumber('7')">7</button>
+        <button class="number" onclick="enterNumber('8')">8</button>
+        <button class="number" onclick="enterNumber('9')">9</button>
+        <button class="operator" onclick="chooseOperation('subtract')">−</button>
+
+        <button class="number" onclick="enterNumber('4')">4</button>
+        <button class="number" onclick="enterNumber('5')">5</button>
+        <button class="number" onclick="enterNumber('6')">6</button>
+        <button class="operator" onclick="chooseOperation('add')">+</button>
+
+        <button class="number" onclick="enterNumber('1')">1</button>
+        <button class="number" onclick="enterNumber('2')">2</button>
+        <button class="number" onclick="enterNumber('3')">3</button>
+
+        <button
+            class="equals"
+            onclick="calculate()"
+            style="grid-row: span 2; height: 140px;"
+        >
+            =
+        </button>
+
+        <button class="number zero" onclick="enterNumber('0')">0</button>
+        <button class="number" onclick="enterNumber('.')">.</button>
+
+    </div>
+
+</div>
+
+<script>
+
+    const display = document.getElementById("display");
+
+    let firstNumber = null;
+    let operation = null;
+    let waitingForSecondNumber = false;
+
+
+    function enterNumber(number) {
+
+        if (waitingForSecondNumber) {
+            display.value = number === "." ? "0." : number;
+            waitingForSecondNumber = false;
+            return;
+        }
+
+        if (number === "." && display.value.includes(".")) {
+            return;
+        }
+
+        if (display.value === "0" && number !== ".") {
+            display.value = number;
+        } else {
+            display.value += number;
+        }
+    }
+
+
+    function chooseOperation(selectedOperation) {
+
+        firstNumber = parseFloat(display.value);
+
+        operation = selectedOperation;
+
+        waitingForSecondNumber = true;
+    }
+
+
+    async function calculate() {
+
+        if (firstNumber === null || operation === null) {
+            return;
+        }
+
+        const secondNumber = parseFloat(display.value);
+
+        try {
+
+            const response = await fetch(
+                `/calculate?a=${firstNumber}` +
+                `&b=${secondNumber}` +
+                `&operation=${operation}`
+            );
+
+            if (!response.ok) {
+                throw new Error("Calculation failed");
+            }
+
+            const result = await response.text();
+
+            display.value = result;
+
+            firstNumber = null;
+            operation = null;
+            waitingForSecondNumber = true;
+
+        } catch (error) {
+
+            display.value = "Error";
+
+            firstNumber = null;
+            operation = null;
+        }
+    }
+
+
+    function clearCalculator() {
+
+        display.value = "0";
+
+        firstNumber = null;
+        operation = null;
+        waitingForSecondNumber = false;
+    }
+
+
+    function deleteNumber() {
+
+        if (display.value.length <= 1) {
+            display.value = "0";
+            return;
+        }
+
+        display.value = display.value.slice(0, -1);
+    }
+
+</script>
+
+</body>
+</html>

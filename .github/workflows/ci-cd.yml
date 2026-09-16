@@ -1,0 +1,60 @@
+name: Java Calculator CI/CD
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Build and test
+        run: mvn -B clean verify
+
+      - name: Upload calculator JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: calculator
+          path: target/calculator.jar
+          if-no-files-found: error
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download calculator JAR
+        uses: actions/download-artifact@v4
+        with:
+          name: calculator
+          path: dist
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ github.ref_name }}
+
+        run: gh release create "$TAG" dist/calculator.jar --generate-notes
