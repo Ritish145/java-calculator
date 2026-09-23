@@ -12,6 +12,7 @@ permissions:
   contents: read
 
 jobs:
+
   build:
     runs-on: ubuntu-latest
 
@@ -36,9 +37,144 @@ jobs:
           path: target/calculator.jar
           if-no-files-found: error
 
+
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: build
+
+    runs-on: [self-hosted, Windows, X64]
+
+    steps:
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Download calculator JAR
+        uses: actions/download-artifact@v4
+        with:
+          name: calculator
+          path: ${{ runner.temp }}\calculator-artifact
+
+      - name: Deploy calculator
+        shell: powershell
+        run: |
+          $ErrorActionPreference = "Stop"
+
+          $appDir = "C:\actions-runner\apps\java-calculator"
+          $jar = Join-Path $appDir "calculator.jar"
+
+          $sourceJar = Join-Path `
+            $env:RUNNER_TEMP `
+            "calculator-artifact\calculator.jar"
+
+          New-Item `
+            -ItemType Directory `
+            -Force `
+            -Path $appDir | Out-Null
+
+          Write-Host "Stopping previous calculator..."
+
+          Get-CimInstance Win32_Process `
+            -Filter "Name='java.exe'" |
+            Where-Object {
+              $_.CommandLine -like "*calculator.jar*"
+            } |
+            ForEach-Object {
+              Stop-Process `
+                -Id $_.ProcessId `
+                -Force
+            }
+
+          Start-Sleep -Seconds 2
+
+          $listener = Get-NetTCPConnection `
+            -LocalPort 8082 `
+            -State Listen `
+            -ErrorAction SilentlyContinue
+
+          if ($listener) {
+            throw "Port 8082 is already being used by PID $($listener.OwningProcess)"
+          }
+
+          Write-Host "Copying new calculator.jar..."
+
+          Copy-Item `
+            $sourceJar `
+            $jar `
+            -Force
+
+          $java = (Get-Command java.exe).Source
+
+          $stdout = Join-Path $appDir "calculator.log"
+          $stderr = Join-Path $appDir "calculator-error.log"
+
+          Write-Host "Starting calculator..."
+
+          Remove-Item `
+            Env:\RUNNER_TRACKING_ID `
+            -ErrorAction SilentlyContinue
+
+          $process = Start-Process `
+            -FilePath $java `
+            -ArgumentList "-jar", $jar `
+            -WorkingDirectory $appDir `
+            -RedirectStandardOutput $stdout `
+            -RedirectStandardError $stderr `
+            -PassThru
+
+          $process.Id |
+            Set-Content `
+              (Join-Path $appDir "calculator.pid")
+
+          Write-Host "Calculator PID: $($process.Id)"
+
+          $healthy = $false
+
+          for ($i = 1; $i -le 15; $i++) {
+
+            Start-Sleep -Seconds 2
+
+            try {
+
+              $response = Invoke-WebRequest `
+                "http://localhost:8082" `
+                -UseBasicParsing
+
+              if ($response.StatusCode -eq 200) {
+                $healthy = $true
+                break
+              }
+
+            }
+            catch {
+              Write-Host "Waiting for calculator..."
+            }
+          }
+
+          if (-not $healthy) {
+
+            Write-Host "Calculator failed to start."
+
+            if (Test-Path $stdout) {
+              Get-Content $stdout
+            }
+
+            if (Test-Path $stderr) {
+              Get-Content $stderr
+            }
+
+            throw "Calculator health check failed."
+          }
+
+          Write-Host "Calculator successfully deployed on port 8082."
+
+
   release:
     if: startsWith(github.ref, 'refs/tags/v')
     needs: build
+
     runs-on: ubuntu-latest
 
     permissions:
