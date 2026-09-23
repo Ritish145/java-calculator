@@ -1,27 +1,43 @@
 package com.calculator;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class Calculator {
 
-    public double add(double a, double b) {
-        return a + b;
-    }
+    public double calculate(
+            double firstNumber,
+            double secondNumber,
+            String operation) {
 
-    public double subtract(double a, double b) {
-        return a - b;
-    }
+        return switch (operation) {
 
-    public double multiply(double a, double b) {
-        return a * b;
-    }
+            case "add" ->
+                    firstNumber + secondNumber;
 
-    public double divide(double a, double b) {
+            case "subtract" ->
+                    firstNumber - secondNumber;
 
-        if (b == 0) {
-            throw new IllegalArgumentException(
-                    "Cannot divide by zero"
-            );
-        }
+            case "multiply" ->
+                    firstNumber * secondNumber;
 
-        return a / b;
+            case "divide" -> {
+
+                if (secondNumber == 0) {
+
+                    throw new ArithmeticException(
+                            "Cannot divide by zero"
+                    );
+
+                }
+
+                yield firstNumber / secondNumber;
+            }
+
+            default ->
+                    throw new IllegalArgumentException(
+                            "Unknown operation: " + operation
+                    );
+        };
     }
 }
