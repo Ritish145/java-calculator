@@ -1,3 +1,63 @@
+name: Java Calculator CI/CD
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Build and test
+        run: mvn -B clean verify
+
+      - name: Upload calculator JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: calculator
+          path: target/calculator.jar
+          if-no-files-found: error
+
+
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    needs: build
+
+    runs-on:
+      - self-hosted
+      - Windows
+      - X64
+
+    steps:
+      - name: Download calculator JAR
+        uses: actions/download-artifact@v4
+        with:
+          name: calculator
+          path: ${{ runner.temp }}\calculator-artifact
+
       - name: Deploy calculator
         shell: powershell
         run: |
@@ -15,13 +75,17 @@
             -Force `
             -Path $appDir | Out-Null
 
-          Write-Host "Stopping JavaCalculator..."
+
+          Write-Host "Stopping JavaCalculator scheduled task..."
 
           Stop-ScheduledTask `
             -TaskName "JavaCalculator" `
             -ErrorAction SilentlyContinue
 
           Start-Sleep -Seconds 3
+
+
+          Write-Host "Checking port 8082..."
 
           $listener = Get-NetTCPConnection `
             -LocalPort 8082 `
@@ -39,6 +103,18 @@
             Start-Sleep -Seconds 2
           }
 
+
+          $listener = Get-NetTCPConnection `
+            -LocalPort 8082 `
+            -State Listen `
+            -ErrorAction SilentlyContinue
+
+          if ($listener) {
+
+            throw "Unable to free port 8082."
+          }
+
+
           Write-Host "Copying new calculator.jar..."
 
           Copy-Item `
@@ -46,10 +122,14 @@
             $jar `
             -Force
 
-          Write-Host "Starting JavaCalculator..."
+
+          Write-Host "Starting JavaCalculator scheduled task..."
 
           Start-ScheduledTask `
             -TaskName "JavaCalculator"
+
+
+          Write-Host "Waiting for calculator to start..."
 
           $healthy = $false
 
@@ -77,10 +157,17 @@
             }
           }
 
+
           if (-not $healthy) {
+
+            Write-Host "Calculator failed health check."
+
+            Write-Host "Scheduled task status:"
 
             Get-ScheduledTask `
               -TaskName "JavaCalculator"
+
+            Write-Host "Scheduled task details:"
 
             Get-ScheduledTaskInfo `
               -TaskName "JavaCalculator"
@@ -88,4 +175,32 @@
             throw "Calculator failed health check."
           }
 
+
           Write-Host "Calculator successfully deployed on port 8082."
+
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    needs: build
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download calculator JAR
+        uses: actions/download-artifact@v4
+        with:
+          name: calculator
+          path: dist
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ github.ref_name }}
+
+        run: |
+          gh release create "$TAG" dist/calculator.jar --generate-notes
