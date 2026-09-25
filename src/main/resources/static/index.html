@@ -43,13 +43,12 @@
             flex-direction: column;
             align-items: center;
             gap: 18px;
+            width: 100%;
         }
 
         .calculator {
             width: 360px;
-
             padding: 22px;
-
             border-radius: 28px;
 
             background:
@@ -70,7 +69,6 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-
             margin-bottom: 18px;
         }
 
@@ -78,7 +76,6 @@
             font-size: 12px;
             font-weight: 700;
             letter-spacing: 2px;
-
             color: #9ca8b9;
         }
 
@@ -86,7 +83,6 @@
             display: flex;
             align-items: center;
             gap: 7px;
-
             font-size: 11px;
             color: #8f9bad;
         }
@@ -94,9 +90,7 @@
         .status-dot {
             width: 7px;
             height: 7px;
-
             border-radius: 50%;
-
             background: #3ddc84;
 
             box-shadow:
@@ -105,7 +99,6 @@
 
         .screen {
             min-height: 125px;
-
             padding: 18px;
 
             display: flex;
@@ -130,13 +123,9 @@
 
         .expression {
             min-height: 24px;
-
             text-align: right;
-
             color: #747f91;
-
             font-size: 15px;
-
             margin-bottom: 8px;
 
             overflow: hidden;
@@ -146,29 +135,22 @@
 
         .display {
             width: 100%;
-
             border: none;
             outline: none;
-
             background: transparent;
-
             color: white;
-
             text-align: right;
 
             font-size: 46px;
             font-weight: 300;
 
             padding: 0;
-
             letter-spacing: -1px;
         }
 
         .buttons {
             display: grid;
-
             grid-template-columns: repeat(4, 1fr);
-
             gap: 11px;
         }
 
@@ -271,14 +253,60 @@
                 );
         }
 
-        .keyboard-hint {
-            color: #7c8798;
+        /* CSV EXPORT AREA */
 
-            font-size: 12px;
+        .export-area {
+            margin-top: 16px;
+        }
+
+        .export-button {
+            width: 100%;
+            height: 50px;
+
+            border-radius: 14px;
+
+            font-size: 14px;
+            font-weight: 600;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #3b82f6,
+                    #2563eb
+                );
+
+            box-shadow:
+                0 7px 18px rgba(37, 99, 235, 0.22);
+        }
+
+        .export-button:hover {
+            box-shadow:
+                0 10px 25px rgba(37, 99, 235, 0.35);
+        }
+
+        .export-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .export-status {
+            min-height: 18px;
+            margin-top: 9px;
 
             text-align: center;
 
+            color: #8f9bad;
+            font-size: 11px;
+        }
+
+        .keyboard-hint {
+            color: #7c8798;
+            font-size: 12px;
+            text-align: center;
             line-height: 1.6;
+
+            padding: 0 15px;
         }
 
         .keyboard-hint strong {
@@ -296,12 +324,258 @@
                 height: 62px;
             }
 
+            .export-button {
+                height: 50px;
+            }
+
             .display {
                 font-size: 40px;
             }
         }
-    </style>
 
+    
+        /* =========================================================
+           AURORA GLASS AWS CALCULATOR THEME
+           ========================================================= */
+
+        body {
+            position: relative;
+            overflow-x: hidden;
+            background:
+                radial-gradient(circle at 15% 20%, rgba(37, 99, 235, 0.30), transparent 32%),
+                radial-gradient(circle at 85% 25%, rgba(126, 34, 206, 0.28), transparent 34%),
+                radial-gradient(circle at 50% 85%, rgba(59, 130, 246, 0.12), transparent 35%),
+                linear-gradient(145deg, #030712, #080d1a 45%, #0b1020);
+            background-attachment: fixed;
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            width: 430px;
+            height: 430px;
+            border-radius: 50%;
+            filter: blur(105px);
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.38;
+        }
+
+        body::before {
+            top: -150px;
+            left: -120px;
+            background: linear-gradient(135deg, #2563eb, #06b6d4);
+            animation: blueAurora 12s ease-in-out infinite alternate;
+        }
+
+        body::after {
+            right: -140px;
+            bottom: -150px;
+            background: linear-gradient(135deg, #7c3aed, #c026d3);
+            animation: purpleAurora 14s ease-in-out infinite alternate;
+        }
+
+        @keyframes blueAurora {
+            from { transform: translate(0, 0) scale(1); }
+            to { transform: translate(170px, 100px) scale(1.18); }
+        }
+
+        @keyframes purpleAurora {
+            from { transform: translate(0, 0) scale(1); }
+            to { transform: translate(-150px, -100px) scale(1.15); }
+        }
+
+        .page {
+            position: relative;
+            z-index: 2;
+            padding: 40px 15px;
+        }
+
+        .calculator {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.68), rgba(15, 23, 42, 0.72));
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.13);
+            box-shadow:
+                0 35px 90px rgba(0, 0, 0, 0.60),
+                0 0 60px rgba(59, 130, 246, 0.10),
+                inset 0 1px 0 rgba(255, 255, 255, 0.10);
+            transition: transform 0.35s ease, box-shadow 0.35s ease;
+        }
+
+        .calculator::before {
+            content: "";
+            position: absolute;
+            width: 220px;
+            height: 500px;
+            top: -180px;
+            left: -170px;
+            transform: rotate(32deg);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            pointer-events: none;
+        }
+
+        .calculator:hover {
+            transform: translateY(-5px);
+            box-shadow:
+                0 45px 110px rgba(0, 0, 0, 0.65),
+                0 0 75px rgba(59, 130, 246, 0.15),
+                0 0 35px rgba(124, 58, 237, 0.10);
+        }
+
+        .brand {
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 2.5px;
+            background: linear-gradient(90deg, #93c5fd, #c4b5fd);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .status { color: #aab6ca; }
+
+        .status-dot {
+            background: #22c55e;
+            animation: awsPulse 1.8s ease-in-out infinite;
+        }
+
+        @keyframes awsPulse {
+            0%, 100% { box-shadow: 0 0 5px rgba(34, 197, 94, 0.6); }
+            50% {
+                box-shadow:
+                    0 0 8px rgba(34, 197, 94, 0.9),
+                    0 0 20px rgba(34, 197, 94, 0.6);
+            }
+        }
+
+        .screen {
+            position: relative;
+            background: linear-gradient(160deg, rgba(2, 6, 15, 0.96), rgba(8, 15, 30, 0.92));
+            border: 1px solid rgba(96, 165, 250, 0.13);
+            box-shadow:
+                inset 0 0 35px rgba(0, 0, 0, 0.55),
+                0 15px 30px rgba(0, 0, 0, 0.25),
+                0 0 20px rgba(59, 130, 246, 0.04);
+        }
+
+        .display {
+            text-shadow:
+                0 0 20px rgba(255, 255, 255, 0.10),
+                0 0 35px rgba(96, 165, 250, 0.10);
+        }
+
+        .expression { color: #8291aa; }
+
+        .number {
+            background: linear-gradient(145deg, rgba(51, 65, 85, 0.92), rgba(30, 41, 59, 0.94));
+            border: 1px solid rgba(255, 255, 255, 0.045);
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.05),
+                0 5px 14px rgba(0, 0, 0, 0.18);
+        }
+
+        .number:hover {
+            background: linear-gradient(145deg, #475569, #334155);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 22px rgba(0, 0, 0, 0.28);
+        }
+
+        .function {
+            background: linear-gradient(145deg, #64748b, #475569);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        .function:hover {
+            background: linear-gradient(145deg, #75849b, #536177);
+        }
+
+        .operator {
+            background: linear-gradient(145deg, #ff9d20, #f97316);
+            box-shadow: 0 8px 22px rgba(249, 115, 22, 0.26);
+        }
+
+        .operator:hover {
+            transform: translateY(-3px) scale(1.025);
+            box-shadow: 0 13px 30px rgba(249, 115, 22, 0.40);
+        }
+
+        .operator.active {
+            background: white;
+            color: #f97316;
+            box-shadow: 0 0 22px rgba(255, 255, 255, 0.22);
+        }
+
+        .equals {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.28);
+        }
+
+        .equals:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 14px 36px rgba(34, 197, 94, 0.42);
+        }
+
+        .clear {
+            background: linear-gradient(135deg, #fb7185, #ef4444);
+            box-shadow: 0 8px 22px rgba(239, 68, 68, 0.23);
+        }
+
+        .export-button {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(90deg, #2563eb, #7c3aed, #2563eb);
+            background-size: 220% 100%;
+            animation: downloadGradient 5s linear infinite;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 28px rgba(37, 99, 235, 0.30);
+        }
+
+        @keyframes downloadGradient {
+            from { background-position: 0% 50%; }
+            to { background-position: 220% 50%; }
+        }
+
+        .export-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 40px rgba(124, 58, 237, 0.40);
+        }
+
+        .export-button::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.16), transparent);
+            transform: skewX(-20deg);
+            transition: left 0.55s ease;
+        }
+
+        .export-button:hover::after { left: 140%; }
+        .export-status { color: #94a3b8; }
+        .keyboard-hint { color: #77849a; opacity: 0.9; }
+        .keyboard-hint strong { color: #cbd5e1; }
+
+        @media (max-width: 450px) {
+            body { align-items: flex-start; }
+            .page { padding-top: 20px; padding-bottom: 30px; }
+            .calculator {
+                width: calc(100vw - 24px);
+                padding: 19px;
+                border-radius: 24px;
+            }
+            .screen { min-height: 115px; }
+            button { height: 60px; }
+            .export-button { height: 50px; }
+            .display { font-size: 40px; }
+        }
+
+    </style>
 </head>
 
 <body>
@@ -317,11 +591,8 @@
             </div>
 
             <div class="status">
-
                 <span class="status-dot"></span>
-
-                Backend connected
-
+                AWS Live
             </div>
 
         </div>
@@ -377,7 +648,7 @@
             </button>
 
 
-            <!-- ROW 2: 0 1 2 -->
+            <!-- ROW 2 -->
 
             <button
                 class="number"
@@ -408,7 +679,7 @@
             </button>
 
 
-            <!-- ROW 3: 3 4 5 -->
+            <!-- ROW 3 -->
 
             <button
                 class="number"
@@ -439,7 +710,7 @@
             </button>
 
 
-            <!-- ROW 4: 6 7 8 -->
+            <!-- ROW 4 -->
 
             <button
                 class="number"
@@ -470,7 +741,7 @@
             </button>
 
 
-            <!-- ROW 5: 9 . = -->
+            <!-- ROW 5 -->
 
             <button
                 class="number"
@@ -492,6 +763,26 @@
                 onclick="calculate()">
                 =
             </button>
+
+        </div>
+
+
+        <!-- DOWNLOAD CSV -->
+
+        <div class="export-area">
+
+            <button
+                id="exportButton"
+                class="export-button"
+                type="button"
+                onclick="downloadRecords()">
+                Download Records CSV
+            </button>
+
+            <div
+                id="exportStatus"
+                class="export-status">
+            </div>
 
         </div>
 
@@ -523,35 +814,24 @@
 
 
     let firstNumber = null;
-
     let operation = null;
-
     let waitingForSecondNumber = false;
-
     let selectedOperatorButton = null;
 
 
     const operationSymbols = {
-
         add: "+",
-
         subtract: "−",
-
         multiply: "×",
-
         divide: "÷"
-
     };
 
 
     function enterNumber(number) {
 
         if (display.value === "Error") {
-
             display.value = "0";
-
         }
-
 
         if (waitingForSecondNumber) {
 
@@ -565,15 +845,12 @@
             return;
         }
 
-
         if (
             number === "." &&
             display.value.includes(".")
         ) {
-
             return;
         }
-
 
         if (
             display.value === "0" &&
@@ -585,9 +862,7 @@
         } else {
 
             display.value += number;
-
         }
-
     }
 
 
@@ -599,21 +874,16 @@
         firstNumber =
             parseFloat(display.value);
 
-
         operation =
             selectedOperation;
-
 
         waitingForSecondNumber =
             true;
 
-
         expression.textContent =
             `${formatNumber(firstNumber)} ${operationSymbols[operation]}`;
 
-
         clearOperatorHighlight();
-
 
         if (button) {
 
@@ -621,9 +891,7 @@
 
             selectedOperatorButton =
                 button;
-
         }
-
     }
 
 
@@ -633,93 +901,163 @@
             firstNumber === null ||
             operation === null
         ) {
-
             return;
-
         }
-
 
         const secondNumber =
             parseFloat(display.value);
-
 
         const currentExpression =
             `${formatNumber(firstNumber)} ` +
             `${operationSymbols[operation]} ` +
             `${formatNumber(secondNumber)}`;
 
-
         try {
 
             const response =
                 await fetch(
-
                     `/calculate` +
-
                     `?a=${encodeURIComponent(firstNumber)}` +
-
                     `&b=${encodeURIComponent(secondNumber)}` +
-
                     `&operation=${encodeURIComponent(operation)}`
-
                 );
-
 
             if (!response.ok) {
-
-                throw new Error(
-                    "Calculation failed"
-                );
-
+                throw new Error("Calculation failed");
             }
-
 
             const result =
                 await response.text();
 
-
             expression.textContent =
                 `${currentExpression} =`;
-
 
             display.value =
                 formatNumber(
                     parseFloat(result)
                 );
 
-
             firstNumber = null;
-
             operation = null;
-
             waitingForSecondNumber = true;
-
 
             clearOperatorHighlight();
 
-        }
-
-        catch (error) {
+        } catch (error) {
 
             expression.textContent =
                 currentExpression;
 
-
             display.value =
                 "Error";
 
-
             firstNumber = null;
-
             operation = null;
-
             waitingForSecondNumber = true;
-
 
             clearOperatorHighlight();
 
+            console.error(error);
         }
+    }
 
+
+    /*
+     * NEW:
+     * Export calculation history from RDS,
+     * upload it to S3,
+     * and open the temporary S3 download URL.
+     */
+    async function downloadRecords() {
+
+        const button =
+            document.getElementById("exportButton");
+
+        const status =
+            document.getElementById("exportStatus");
+
+        try {
+
+            button.disabled = true;
+
+            button.textContent =
+                "Preparing CSV...";
+
+            status.textContent =
+                "Reading records and creating report...";
+
+
+            const response =
+                await fetch(
+                    "/reports/export/csv",
+                    {
+                        method: "POST"
+                    }
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    `Export failed with status ${response.status}`
+                );
+            }
+
+
+            const data =
+                await response.json();
+
+
+            if (!data.downloadUrl) {
+
+                throw new Error(
+                    "Download URL was not returned."
+                );
+            }
+
+
+            status.textContent =
+                `${data.recordCount} records exported. Download starting...`;
+
+
+            /*
+             * The S3 bucket stays private.
+             * The backend gives the browser a temporary
+             * presigned URL for this specific CSV.
+             */
+            window.location.href =
+                data.downloadUrl;
+
+
+            setTimeout(() => {
+
+                status.textContent =
+                    `${data.recordCount} records exported successfully.`;
+
+            }, 1500);
+
+
+        } catch (error) {
+
+            console.error(
+                "CSV export error:",
+                error
+            );
+
+            status.textContent =
+                "Could not download records.";
+
+            alert(
+                "CSV export failed. Please try again."
+            );
+
+        } finally {
+
+            button.disabled = false;
+
+            button.textContent =
+                "Download Records CSV";
+        }
     }
 
 
@@ -729,16 +1067,11 @@
 
         expression.textContent = "";
 
-
         firstNumber = null;
-
         operation = null;
-
         waitingForSecondNumber = false;
 
-
         clearOperatorHighlight();
-
     }
 
 
@@ -754,22 +1087,17 @@
             waitingForSecondNumber = false;
 
             return;
-
         }
-
 
         if (display.value.length <= 1) {
 
             display.value = "0";
 
             return;
-
         }
-
 
         display.value =
             display.value.slice(0, -1);
-
     }
 
 
@@ -778,22 +1106,17 @@
         const number =
             parseFloat(display.value);
 
-
         if (
             Number.isNaN(number) ||
             number === 0
         ) {
-
             return;
-
         }
-
 
         display.value =
             formatNumber(
                 number * -1
             );
-
     }
 
 
@@ -806,39 +1129,25 @@
                 button.classList.remove(
                     "active"
                 );
-
             });
 
-
         selectedOperatorButton = null;
-
     }
 
 
     function formatNumber(number) {
 
-        if (
-            !Number.isFinite(number)
-        ) {
-
+        if (!Number.isFinite(number)) {
             return "Error";
-
         }
 
-
-        if (
-            Number.isInteger(number)
-        ) {
-
+        if (Number.isInteger(number)) {
             return number.toString();
-
         }
-
 
         return parseFloat(
             number.toFixed(10)
         ).toString();
-
     }
 
 
@@ -847,16 +1156,11 @@
         const button =
             document.querySelector(selector);
 
-
         if (!button) {
-
             return;
-
         }
 
-
         button.classList.add("pressed");
-
 
         setTimeout(() => {
 
@@ -865,30 +1169,26 @@
             );
 
         }, 100);
-
     }
 
 
     function keyboardOperation(
-        operation
+        selectedOperation
     ) {
 
         const button =
             document.querySelector(
-                `[data-operation="${operation}"]`
+                `[data-operation="${selectedOperation}"]`
             );
 
-
         chooseOperation(
-            operation,
+            selectedOperation,
             button
         );
 
-
         flashButton(
-            `[data-operation="${operation}"]`
+            `[data-operation="${selectedOperation}"]`
         );
-
     }
 
 
@@ -899,10 +1199,6 @@
             let handled = true;
 
 
-            /*
-             * Numeric keypad support.
-             */
-
             if (
                 event.code.startsWith(
                     "Numpad"
@@ -910,7 +1206,6 @@
             ) {
 
                 const numpadMap = {
-
                     Numpad0: "0",
                     Numpad1: "1",
                     Numpad2: "2",
@@ -921,7 +1216,6 @@
                     Numpad7: "7",
                     Numpad8: "8",
                     Numpad9: "9"
-
                 };
 
 
@@ -933,102 +1227,68 @@
                     const number =
                         numpadMap[event.code];
 
-
                     enterNumber(number);
-
 
                     flashButton(
                         `[data-number="${number}"]`
                     );
 
-                }
-
-                else if (
+                } else if (
                     event.code ===
                     "NumpadDecimal"
                 ) {
 
                     enterNumber(".");
 
-
                     flashButton(
                         `[data-number="."]`
                     );
 
-                }
-
-                else if (
+                } else if (
                     event.code ===
                     "NumpadAdd"
                 ) {
 
-                    keyboardOperation(
-                        "add"
-                    );
+                    keyboardOperation("add");
 
-                }
-
-                else if (
+                } else if (
                     event.code ===
                     "NumpadSubtract"
                 ) {
 
-                    keyboardOperation(
-                        "subtract"
-                    );
+                    keyboardOperation("subtract");
 
-                }
-
-                else if (
+                } else if (
                     event.code ===
                     "NumpadMultiply"
                 ) {
 
-                    keyboardOperation(
-                        "multiply"
-                    );
+                    keyboardOperation("multiply");
 
-                }
-
-                else if (
+                } else if (
                     event.code ===
                     "NumpadDivide"
                 ) {
 
-                    keyboardOperation(
-                        "divide"
-                    );
+                    keyboardOperation("divide");
 
-                }
-
-                else if (
+                } else if (
                     event.code ===
                     "NumpadEnter"
                 ) {
 
                     calculate();
 
-
                     flashButton(
                         '[data-key="equals"]'
                     );
 
-                }
-
-                else {
+                } else {
 
                     handled = false;
-
                 }
 
-            }
-
-
-            /*
-             * Normal keyboard number row.
-             */
-
-            else if (
+            } else if (
                 /^[0-9]$/.test(
                     event.key
                 )
@@ -1038,129 +1298,85 @@
                     event.key
                 );
 
-
                 flashButton(
                     `[data-number="${event.key}"]`
                 );
 
-            }
-
-
-            else if (
+            } else if (
                 event.key === "."
             ) {
 
                 enterNumber(".");
 
-
                 flashButton(
                     `[data-number="."]`
                 );
 
-            }
-
-
-            else if (
+            } else if (
                 event.key === "+"
             ) {
 
-                keyboardOperation(
-                    "add"
-                );
+                keyboardOperation("add");
 
-            }
-
-
-            else if (
+            } else if (
                 event.key === "-"
             ) {
 
-                keyboardOperation(
-                    "subtract"
-                );
+                keyboardOperation("subtract");
 
-            }
-
-
-            else if (
+            } else if (
                 event.key === "*"
             ) {
 
-                keyboardOperation(
-                    "multiply"
-                );
+                keyboardOperation("multiply");
 
-            }
-
-
-            else if (
+            } else if (
                 event.key === "/"
             ) {
 
-                keyboardOperation(
-                    "divide"
-                );
+                keyboardOperation("divide");
 
-            }
-
-
-            else if (
+            } else if (
                 event.key === "Enter" ||
                 event.key === "="
             ) {
 
                 calculate();
 
-
                 flashButton(
                     '[data-key="equals"]'
                 );
 
-            }
-
-
-            else if (
+            } else if (
                 event.key === "Backspace"
             ) {
 
                 deleteNumber();
 
-
                 flashButton(
                     '[data-key="backspace"]'
                 );
 
-            }
-
-
-            else if (
+            } else if (
                 event.key === "Escape" ||
                 event.key === "Delete"
             ) {
 
                 clearCalculator();
 
-
                 flashButton(
                     '[data-key="clear"]'
                 );
 
-            }
-
-
-            else {
+            } else {
 
                 handled = false;
-
             }
 
 
             if (handled) {
-
                 event.preventDefault();
-
             }
-
         }
     );
 
